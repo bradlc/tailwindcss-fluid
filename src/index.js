@@ -71,7 +71,7 @@ function makeFluid({ minvw, maxvw, min, max }, negate = false) {
   const mn = negate ? -max : min
   const mx = negate ? -min : max
 
-  return `calc(${mn} + ${parseInt(mx, 10) -
-    parseInt(mn, 10)} * (100vw - ${minvw} / ${parseInt(maxvw) -
-    parseInt(minvw)}))`
+  return `calc(${mn} + ${parseFloat(mx) -
+    parseFloat(mn)} * (100vw - ${minvw} / ${parseFloat(maxvw) -
+    parseFloat(minvw)}))`
 }
