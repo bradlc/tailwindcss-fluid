@@ -39,3 +39,8 @@ The above configuration generates one new utility class, `.text-md-fluid`:
   }
 }
 ```
+
+## Links
+
+* [Responsive And Fluid Typography With vh And vw Units](https://www.smashingmagazine.com/2016/05/fluid-typography/)
+* [Flexible typography with CSS locks](https://blog.typekit.com/2016/08/17/flexible-typography-with-css-locks/)
