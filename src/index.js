@@ -24,29 +24,29 @@ const props = {
 }
 
 export default function({ suffix = '-fluid', ...properties }) {
-  return function({ e, prefix, rule, atRule, addComponents }) {
+  return function({ e, prefix, rule, atRule, addComponents, config }) {
     const classes = []
 
     Object.keys(properties).forEach(property => {
-      Object.keys(properties[property]).forEach(id => {
+      const values =
+        properties[property] === true ? config(property) : properties[property]
+
+      Object.keys(values).forEach(id => {
         const prop = props[property].prop
 
-        if (
-          typeof properties[property][id] === 'string' ||
-          typeof properties[property][id] === 'number'
-        ) {
+        if (typeof values[id] === 'string' || typeof values[id] === 'number') {
           const className = `${props[property].prefix}-${id}${suffix}`
           const selector = prefix(`.${e(className)}`)
 
           classes.push(
             rule(selector, {
-              [prop]: properties[property][id]
+              [prop]: values[id]
             })
           )
           return
         }
 
-        const { min, max, minvw, maxvw } = properties[property][id]
+        const { min, max, minvw, maxvw } = values[id]
 
         const variants = ['']
         if (props[property].sides) {
@@ -66,10 +66,7 @@ export default function({ suffix = '-fluid', ...properties }) {
             }),
             atRule(`@media (min-width: ${minvw})`, [
               rule(selector, {
-                [prop]: makeFluid(
-                  properties[property][id],
-                  property === 'negativeMargin'
-                )
+                [prop]: makeFluid(values[id], property === 'negativeMargin')
               })
             ]),
             atRule(`@media (min-width: ${maxvw})`, [
