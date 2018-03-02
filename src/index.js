@@ -24,7 +24,7 @@ const props = {
 }
 
 export default function({ suffix = '-fluid', ...properties }) {
-  return function({ rule, atRule, addComponents }) {
+  return function({ e, prefix, rule, atRule, addComponents }) {
     const classes = []
 
     Object.keys(properties).forEach(property => {
@@ -41,7 +41,8 @@ export default function({ suffix = '-fluid', ...properties }) {
         }
 
         variants.forEach(v => {
-          const selector = `.${props[property].prefix}-${id}${v}${suffix}`
+          const className = `${props[property].prefix}-${id}${v}${suffix}`
+          const selector = prefix(`.${e(className)}`)
 
           classes.push(
             rule(selector, {
