@@ -30,6 +30,22 @@ export default function({ suffix = '-fluid', ...properties }) {
     Object.keys(properties).forEach(property => {
       Object.keys(properties[property]).forEach(id => {
         const prop = props[property].prop
+
+        if (
+          typeof properties[property][id] === 'string' ||
+          typeof properties[property][id] === 'number'
+        ) {
+          const className = `${props[property].prefix}-${id}${suffix}`
+          const selector = prefix(`.${e(className)}`)
+
+          classes.push(
+            rule(selector, {
+              [prop]: properties[property][id]
+            })
+          )
+          return
+        }
+
         const { min, max, minvw, maxvw } = properties[property][id]
 
         const variants = ['']
