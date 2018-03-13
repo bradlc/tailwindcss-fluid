@@ -40,7 +40,7 @@ export default function({ suffix = '-fluid', ...properties }) {
 
           classes.push({
             [selector]: {
-              [prop]: values[id]
+              [prop]: property === 'negativeMargin' ? `-${values[id]}` : values[id]
             }
           })
           return
@@ -62,7 +62,7 @@ export default function({ suffix = '-fluid', ...properties }) {
 
           classes.push({
             [selector]: {
-              [prop]: min
+              [prop]: property === 'negativeMargin' ? `-${min}` : min
             },
             [`@media (min-width: ${minvw})`]: {
               [selector]: {
@@ -71,7 +71,7 @@ export default function({ suffix = '-fluid', ...properties }) {
             },
             [`@media (min-width: ${maxvw})`]: {
               [selector]: {
-                [prop]: max
+                [prop]: property === 'negativeMargin' ? `-${max}` : max
               }
             }
           })
@@ -84,8 +84,8 @@ export default function({ suffix = '-fluid', ...properties }) {
 }
 
 function makeFluid({ minvw, maxvw, min, max }, negate = false) {
-  const mn = negate ? -max : min
-  const mx = negate ? -min : max
+  const mn = negate ? `-${min}` : min
+  const mx = negate ? `-${max}` : max
 
   return `calc(${mn} + ${parseFloat(mx) -
     parseFloat(mn)} * (100vw - ${minvw}) / ${parseFloat(maxvw) -
