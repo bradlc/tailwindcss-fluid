@@ -23,6 +23,9 @@ const props = {
   opacity: { prefix: 'opacity', prop: 'opacity' }
 }
 
+const SIDES = ['top', 'right', 'bottom', 'left']
+const CORNERS = ['top-left', 'top-right', 'bottom-right', 'bottom-left']
+
 export default function({ suffix = '-fluid', ...properties }) {
   return function({ e, prefix, addComponents, config }) {
     const classes = []
@@ -50,28 +53,29 @@ export default function({ suffix = '-fluid', ...properties }) {
 
         const variants = ['']
         if (props[property].sides) {
-          variants.push('-t', '-r', '-b', '-l')
+          variants.push(...SIDES)
         }
         if (props[property].corners) {
-          variants.push('-tl', '-tr', '-br', '-bl')
+          variants.push(...CORNERS)
         }
 
         variants.forEach(v => {
-          const className = `${props[property].prefix}-${id}${v}${suffix}`
+          const className = `${props[property].prefix}${shorthand(v)}-${id}${suffix}`
           const selector = prefix(`.${e(className)}`)
+          const p = propName(prop, v)
 
           classes.push({
             [selector]: {
-              [prop]: property === 'negativeMargin' ? `-${min}` : min
+              [p]: property === 'negativeMargin' ? `-${min}` : min
             },
             [`@media (min-width: ${minvw})`]: {
               [selector]: {
-                [prop]: makeFluid(values[id], property === 'negativeMargin')
+                [p]: makeFluid(values[id], property === 'negativeMargin')
               }
             },
             [`@media (min-width: ${maxvw})`]: {
               [selector]: {
-                [prop]: property === 'negativeMargin' ? `-${max}` : max
+                [p]: property === 'negativeMargin' ? `-${max}` : max
               }
             }
           })
@@ -90,4 +94,20 @@ function makeFluid({ minvw, maxvw, min, max }, negate = false) {
   return `calc(${mn} + ${parseFloat(mx) -
     parseFloat(mn)} * (100vw - ${minvw}) / ${parseFloat(maxvw) -
     parseFloat(minvw)})`
+}
+
+function shorthand(longhand) {
+  if (longhand === '') return ''
+  return '-' + longhand.match(/\b[a-z]/g).join('')
+}
+
+function propName(prop, variant) {
+  if (!variant) return prop
+
+  const parts = prop.split('-')
+  if (parts.length === 1) {
+    return `${parts[0]}-${variant}`
+  }
+
+  return `${parts[0]}-${variant}-${parts.slice(1).join('-')}`
 }
