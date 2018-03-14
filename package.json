@@ -1,7 +1,7 @@
 {
   "name": "tailwindcss-fluid",
-  "version": "0.0.2",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Fluid utilities for Tailwind CSS",
   "main": "dist/index.js",
   "files": ["dist"],
   "scripts": {
