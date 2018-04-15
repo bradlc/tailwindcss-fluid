@@ -27,7 +27,7 @@ const SIDES = ['top', 'right', 'bottom', 'left']
 const CORNERS = ['top-left', 'top-right', 'bottom-right', 'bottom-left']
 
 export default function({ suffix = '-fluid', ...properties }) {
-  return function({ e, prefix, addComponents, config }) {
+  return function({ e, addComponents, config }) {
     const classes = []
 
     Object.keys(properties).forEach(property => {
@@ -39,11 +39,12 @@ export default function({ suffix = '-fluid', ...properties }) {
 
         if (typeof values[id] === 'string' || typeof values[id] === 'number') {
           const className = `${props[property].prefix}-${id}${suffix}`
-          const selector = prefix(`.${e(className)}`)
+          const selector = `.${e(className)}`
 
           classes.push({
             [selector]: {
-              [prop]: property === 'negativeMargin' ? `-${values[id]}` : values[id]
+              [prop]:
+                property === 'negativeMargin' ? `-${values[id]}` : values[id]
             }
           })
           return
@@ -60,8 +61,10 @@ export default function({ suffix = '-fluid', ...properties }) {
         }
 
         variants.forEach(v => {
-          const className = `${props[property].prefix}${shorthand(v)}-${id}${suffix}`
-          const selector = prefix(`.${e(className)}`)
+          const className = `${props[property].prefix}${shorthand(
+            v
+          )}-${id}${suffix}`
+          const selector = `.${e(className)}`
           const p = propName(prop, v)
 
           classes.push({
