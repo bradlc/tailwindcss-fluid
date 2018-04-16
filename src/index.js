@@ -27,7 +27,7 @@ const SIDES = ['top', 'right', 'bottom', 'left']
 const CORNERS = ['top-left', 'top-right', 'bottom-right', 'bottom-left']
 
 export default function({ suffix = '-fluid', ...properties }) {
-  return function({ e, addComponents, config }) {
+  return function({ e, addUtilities, config }) {
     const classes = []
 
     Object.keys(properties).forEach(property => {
@@ -86,7 +86,7 @@ export default function({ suffix = '-fluid', ...properties }) {
       })
     })
 
-    addComponents(classes)
+    addUtilities(classes)
   }
 }
 
