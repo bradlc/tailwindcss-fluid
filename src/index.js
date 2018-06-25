@@ -22,15 +22,34 @@ const props = {
   minHeight: { prefix: 'min-h', prop: 'min-height' },
   maxWidth: { prefix: 'max-w', prop: 'max-width' },
   maxHeight: { prefix: 'max-h', prop: 'max-height' },
-  padding: { prefix: 'p', prop: 'padding', sides: true, hyphen: false },
-  margin: { prefix: 'm', prop: 'margin', sides: true, hyphen: false },
-  negativeMargin: { prefix: '-m', prop: 'margin', sides: true, hyphen: false },
+  padding: {
+    prefix: 'p',
+    prop: 'padding',
+    sides: true,
+    axes: true,
+    hyphen: false
+  },
+  margin: {
+    prefix: 'm',
+    prop: 'margin',
+    sides: true,
+    axes: true,
+    hyphen: false
+  },
+  negativeMargin: {
+    prefix: '-m',
+    prop: 'margin',
+    sides: true,
+    axes: true,
+    hyphen: false
+  },
   zIndex: { prefix: 'z', prop: 'z-index' },
   opacity: { prefix: 'opacity', prop: 'opacity' }
 }
 
 const SIDES = ['top', 'right', 'bottom', 'left']
 const CORNERS = ['top-left', 'top-right', 'bottom-right', 'bottom-left']
+const AXES = ['x', 'y']
 
 export default function({ suffix = '-fluid', ...properties }) {
   return function({ e, addUtilities, config }) {
@@ -59,6 +78,9 @@ export default function({ suffix = '-fluid', ...properties }) {
         const { min, max, minvw, maxvw } = values[id]
 
         const variants = ['']
+        if (props[property].axes) {
+          variants.push(...AXES)
+        }
         if (props[property].sides) {
           variants.push(...SIDES)
         }
@@ -72,21 +94,24 @@ export default function({ suffix = '-fluid', ...properties }) {
             props[property].hyphen
           )}-${id}${suffix}`
           const selector = `.${e(className)}`
-          const p = propName(prop, v)
+          const p = propNames(prop, v, props[property].corners)
 
           classes.push({
-            [selector]: {
-              [p]: property === 'negativeMargin' ? `-${min}` : min
-            },
+            [selector]: p.reduce((acc, curr) => {
+              acc[curr] = property === 'negativeMargin' ? `-${min}` : min
+              return acc
+            }, {}),
             [`@media (min-width: ${minvw})`]: {
-              [selector]: {
-                [p]: makeFluid(values[id], property === 'negativeMargin')
-              }
+              [selector]: p.reduce((acc, curr) => {
+                acc[curr] = makeFluid(values[id], property === 'negativeMargin')
+                return acc
+              }, {})
             },
             [`@media (min-width: ${maxvw})`]: {
-              [selector]: {
-                [p]: property === 'negativeMargin' ? `-${max}` : max
-              }
+              [selector]: p.reduce((acc, curr) => {
+                acc[curr] = property === 'negativeMargin' ? `-${max}` : max
+                return acc
+              }, {})
             }
           })
         })
@@ -111,13 +136,29 @@ function shorthand(longhand, hyphen = true) {
   return (hyphen ? '-' : '') + longhand.match(/\b[a-z]/g).join('')
 }
 
-function propName(prop, variant) {
-  if (!variant) return prop
+function propNames(prop, variant, corners) {
+  if (!variant) return [prop]
+
+  let variants = [variant]
+
+  if (variant === 'x') {
+    variants = ['left', 'right']
+  } else if (variant === 'y') {
+    variants = ['top', 'bottom']
+  } else if (variant === 'top' && corners) {
+    variants = ['top-left', 'top-right']
+  } else if (variant === 'right' && corners) {
+    variants = ['top-right', 'bottom-right']
+  } else if (variant === 'bottom' && corners) {
+    variants = ['bottom-left', 'bottom-right']
+  } else if (variant === 'left' && corners) {
+    variants = ['top-left', 'bottom-left']
+  }
 
   const parts = prop.split('-')
   if (parts.length === 1) {
-    return `${parts[0]}-${variant}`
+    return variants.map(v => `${parts[0]}-${v}`)
   }
 
-  return `${parts[0]}-${variant}-${parts.slice(1).join('-')}`
+  return variants.map(v => `${parts[0]}-${v}-${parts.slice(1).join('-')}`)
 }
