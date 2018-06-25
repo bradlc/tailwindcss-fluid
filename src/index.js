@@ -3,12 +3,18 @@ const props = {
   fontWeights: { prefix: 'font', prop: 'font-weight' },
   leading: { prefix: 'leading', prop: 'line-height' },
   tracking: { prefix: 'tracking', prop: 'letter-spacing' },
-  borderWidths: { prefix: 'border', prop: 'border-width', sides: true },
+  borderWidths: {
+    prefix: 'border',
+    prop: 'border-width',
+    sides: true,
+    hyphen: true
+  },
   borderRadius: {
     prefix: 'rounded',
     prop: 'border-radius',
     sides: true,
-    corners: true
+    corners: true,
+    hyphen: true
   },
   width: { prefix: 'w', prop: 'width' },
   height: { prefix: 'h', prop: 'height' },
@@ -16,9 +22,9 @@ const props = {
   minHeight: { prefix: 'min-h', prop: 'min-height' },
   maxWidth: { prefix: 'max-w', prop: 'max-width' },
   maxHeight: { prefix: 'max-h', prop: 'max-height' },
-  padding: { prefix: 'p', prop: 'padding', sides: true },
-  margin: { prefix: 'm', prop: 'margin', sides: true },
-  negativeMargin: { prefix: '-m', prop: 'margin', sides: true },
+  padding: { prefix: 'p', prop: 'padding', sides: true, hyphen: false },
+  margin: { prefix: 'm', prop: 'margin', sides: true, hyphen: false },
+  negativeMargin: { prefix: '-m', prop: 'margin', sides: true, hyphen: false },
   zIndex: { prefix: 'z', prop: 'z-index' },
   opacity: { prefix: 'opacity', prop: 'opacity' }
 }
@@ -62,7 +68,8 @@ export default function({ suffix = '-fluid', ...properties }) {
 
         variants.forEach(v => {
           const className = `${props[property].prefix}${shorthand(
-            v
+            v,
+            props[property].hyphen
           )}-${id}${suffix}`
           const selector = `.${e(className)}`
           const p = propName(prop, v)
@@ -99,9 +106,9 @@ function makeFluid({ minvw, maxvw, min, max }, negate = false) {
     parseFloat(minvw)})`
 }
 
-function shorthand(longhand) {
+function shorthand(longhand, hyphen = true) {
   if (longhand === '') return ''
-  return '-' + longhand.match(/\b[a-z]/g).join('')
+  return (hyphen ? '-' : '') + longhand.match(/\b[a-z]/g).join('')
 }
 
 function propName(prop, variant) {
