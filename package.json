@@ -3,14 +3,18 @@
   "version": "0.2.0",
   "description": "Fluid utilities for Tailwind CSS",
   "main": "dist/index.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "babel":
-      "babel --plugins=transform-object-rest-spread --no-babelrc -d build src",
+    "babel": "babel --plugins=transform-object-rest-spread --no-babelrc -d build src",
     "build": "npm run -s babel && microbundle -i build/index.js -f cjs",
     "prepublish": "npm run build"
   },
-  "keywords": ["tailwindcss", "tailwind"],
+  "keywords": [
+    "tailwindcss",
+    "tailwind"
+  ],
   "author": "Brad Cornes <bradlc41@gmail.com>",
   "repository": {
     "type": "git",

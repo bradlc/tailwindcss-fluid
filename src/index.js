@@ -1,134 +1,109 @@
-const props = {
-  textSizes: { prefix: 'text', prop: 'font-size' },
-  fontWeights: { prefix: 'font', prop: 'font-weight' },
-  leading: { prefix: 'leading', prop: 'line-height' },
-  tracking: { prefix: 'tracking', prop: 'letter-spacing' },
-  borderWidths: {
+import polyFluidSizing from './polyFluidSizing.js'
+
+const modules = {
+  fluidTextSizes: { prefix: 'text', prop: 'font-size' },
+  fluidFontSize: { prefix: 'text', prop: 'font-size' }, // v1
+  fluidFontWeights: { prefix: 'font', prop: 'font-weight' },
+  fluidFontWeight: { prefix: 'font', prop: 'font-weight' }, // v1
+  fluidLeading: { prefix: 'leading', prop: 'line-height' },
+  fluidLineHeight: { prefix: 'leading', prop: 'line-height' }, // v1
+  fluidTracking: { prefix: 'tracking', prop: 'letter-spacing' },
+  fluidLetterSpacing: { prefix: 'tracking', prop: 'letter-spacing' }, // v1
+  fluidBorderWidths: {
     prefix: 'border',
     prop: 'border-width',
     sides: true,
     hyphen: true
   },
-  borderRadius: {
+  fluidBorderWidth: {
+    // v1
+    prefix: 'border',
+    prop: 'border-width',
+    sides: true,
+    hyphen: true
+  },
+  fluidBorderRadius: {
     prefix: 'rounded',
     prop: 'border-radius',
     sides: true,
     corners: true,
     hyphen: true
   },
-  width: { prefix: 'w', prop: 'width' },
-  height: { prefix: 'h', prop: 'height' },
-  minWidth: { prefix: 'min-w', prop: 'min-width' },
-  minHeight: { prefix: 'min-h', prop: 'min-height' },
-  maxWidth: { prefix: 'max-w', prop: 'max-width' },
-  maxHeight: { prefix: 'max-h', prop: 'max-height' },
-  padding: {
+  fluidWidth: { prefix: 'w', prop: 'width' },
+  fluidHeight: { prefix: 'h', prop: 'height' },
+  fluidMinWidth: { prefix: 'min-w', prop: 'min-width' },
+  fluidMinHeight: { prefix: 'min-h', prop: 'min-height' },
+  fluidMaxWidth: { prefix: 'max-w', prop: 'max-width' },
+  fluidMaxHeight: { prefix: 'max-h', prop: 'max-height' },
+  fluidPadding: {
     prefix: 'p',
     prop: 'padding',
     sides: true,
     axes: true,
     hyphen: false
   },
-  margin: {
+  fluidMargin: {
     prefix: 'm',
     prop: 'margin',
     sides: true,
     axes: true,
     hyphen: false
   },
-  negativeMargin: {
+  fluidNegativeMargin: {
     prefix: '-m',
     prop: 'margin',
     sides: true,
     axes: true,
     hyphen: false
   },
-  zIndex: { prefix: 'z', prop: 'z-index' },
-  opacity: { prefix: 'opacity', prop: 'opacity' }
+  fluidZIndex: { prefix: 'z', prop: 'z-index' },
+  fluidOpacity: { prefix: 'opacity', prop: 'opacity' }
 }
 
 const SIDES = ['top', 'right', 'bottom', 'left']
 const CORNERS = ['top-left', 'top-right', 'bottom-right', 'bottom-left']
 const AXES = ['x', 'y']
 
-export default function({ suffix = '-fluid', ...properties }) {
+export default function({
+  transformClassName,
+  rem = false,
+  rootFontSize = 16
+} = {}) {
   return function({ e, addUtilities, config }) {
-    const classes = []
-
-    Object.keys(properties).forEach(property => {
-      const values =
-        properties[property] === true ? config(property) : properties[property]
+    Object.keys(modules).forEach(mod => {
+      const values = config(mod, config(`theme.${mod}`, {}))
 
       Object.keys(values).forEach(id => {
-        const prop = props[property].prop
-
-        if (typeof values[id] === 'string' || typeof values[id] === 'number') {
-          const className = `${props[property].prefix}-${id}${suffix}`
-          const selector = `.${e(className)}`
-
-          classes.push({
-            [selector]: {
-              [prop]:
-                property === 'negativeMargin' ? `-${values[id]}` : values[id]
-            }
-          })
-          return
-        }
-
-        const { min, max, minvw, maxvw } = values[id]
+        const prop = modules[mod].prop
 
         const variants = ['']
-        if (props[property].axes) {
+        if (modules[mod].axes) {
           variants.push(...AXES)
         }
-        if (props[property].sides) {
+        if (modules[mod].sides) {
           variants.push(...SIDES)
         }
-        if (props[property].corners) {
+        if (modules[mod].corners) {
           variants.push(...CORNERS)
         }
 
         variants.forEach(v => {
-          const className = `${props[property].prefix}${shorthand(
+          let className = `${modules[mod].prefix}${shorthand(
             v,
-            props[property].hyphen
-          )}-${id}${suffix}`
-          const selector = `.${e(className)}`
-          const p = propNames(prop, v, props[property].corners)
+            modules[mod].hyphen
+          )}-${id}`
+          if (transformClassName) className = transformClassName(className)
+          let selector = `.${e(className)}`
+          const p = propNames(prop, v, modules[mod].corners)
 
-          classes.push({
-            [selector]: p.reduce((acc, curr) => {
-              acc[curr] = property === 'negativeMargin' ? `-${min}` : min
-              return acc
-            }, {}),
-            [`@media (min-width: ${minvw})`]: {
-              [selector]: p.reduce((acc, curr) => {
-                acc[curr] = makeFluid(values[id], property === 'negativeMargin')
-                return acc
-              }, {})
-            },
-            [`@media (min-width: ${maxvw})`]: {
-              [selector]: p.reduce((acc, curr) => {
-                acc[curr] = property === 'negativeMargin' ? `-${max}` : max
-                return acc
-              }, {})
-            }
-          })
+          addUtilities(
+            polyFluidSizing(selector, p, values[id], { rem, rootFontSize }),
+            config(`modules.${mod}`, config(`variants.${mod}`, []))
+          )
         })
       })
     })
-
-    addUtilities(classes)
   }
-}
-
-function makeFluid({ minvw, maxvw, min, max }, negate = false) {
-  const mn = negate ? `-${min}` : min
-  const mx = negate ? `-${max}` : max
-
-  return `calc(${mn} + ${parseFloat(mx) -
-    parseFloat(mn)} * (100vw - ${minvw}) / ${parseFloat(maxvw) -
-    parseFloat(minvw)})`
 }
 
 function shorthand(longhand, hyphen = true) {
