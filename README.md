@@ -30,7 +30,7 @@ You define which class names will be generated much like you do in the core Tail
 
 ```js
 {
-  textSizes: {
+  fontSize: {
     sm: {
       min: '14px',
       max: '20px',
@@ -63,7 +63,7 @@ The above settings will generate one new utility class, `.text-sm-fluid`:
 
 ### Supported properties
 
-`textSizes`, `fontWeights`, `leading`, `tracking`, `borderWidths`, `borderRadius`, `width`, `height`, `minWidth`, `minHeight`, `maxWidth`, `maxHeight`, `padding`, `margin`, `negativeMargin`, `zIndex`, `opacity`
+`fontSize`, `fontWeights`, `leading`, `tracking`, `borderWidths`, `borderRadius`, `width`, `height`, `minWidth`, `minHeight`, `maxWidth`, `maxHeight`, `padding`, `margin`, `negativeMargin`, `zIndex`, `opacity`
 
 ### Setting your values in the core Tailwind config
 
@@ -71,7 +71,7 @@ If you set a property to `true` it will take the settings from your core config 
 
 ```js
 {
-  textSizes: true
+  fontSize: true
 }
 ```
 
@@ -83,7 +83,7 @@ You can generate non-fluid utilities by defining a single value, like you would 
 
 ```js
 {
-  textSizes: {
+  fontSize: {
     sm: '14px',
     md: {
       min: '16px',
@@ -114,7 +114,7 @@ Here is an example of using `tailwindcss-fluid` for all of your (fluid and non-f
 module.exports = {
   // ...
 
-  textSizes: {
+  fontSize: {
     sm: '14px',
     md: {
       min: '16px',
@@ -132,12 +132,8 @@ module.exports = {
 
   // ...
 
-  modules: {
-    // ...
-
-    textSizes: false // disable the core module
-
-    // ...
+  corePlugins: {
+    fontSize: false
   },
 
   plugins: [
