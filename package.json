@@ -25,6 +25,6 @@
     "babel": "^6.23.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "microbundle": "^0.4.4"
+    "microbundle": "^0.15.1"
   }
 }
